@@ -319,25 +319,24 @@ std::string dump_type(const Il2CppType *type) {
     return outPut.str();
 }
 
-void il2cpp_dump(void *handle, char *outDir) {
+void il2cpp_dump(void *handle, char *outDir, const char* il2cppModuleName) {
 
-    //initialize
-    while (get_module_base("GameAssembly.dll") == nullptr)
+    while (get_module_base(il2cppModuleName) == nullptr)
     {
-        LOGD("UserAssembly.dll isn't initialized, waiting for 2 sec.");
+        LOGI("%s isn't initialized, waiting for 2 sec.", il2cppModuleName);
         Sleep(2000);
     }
 
-    il2cpp_base = (uint64_t)get_module_base("GameAssembly.dll");
+    il2cpp_base = (uint64_t)get_module_base(il2cppModuleName);
 
     if (il2cpp_base) {
-        LOGI("GameAssembly.dll: %" PRIx64"", il2cpp_base);
+        LOGD("%s at %" PRIx64"", il2cppModuleName, il2cpp_base);
         LOGI("Waiting 15sec for loading game library.");
         Sleep(15000);
 
         init_il2cpp_api();
     } else {
-        LOGE("Failed to get GameAssembly module.");
+        LOGE("Failed to get %s module.", il2cppModuleName);
         return;
     }
 
@@ -365,7 +364,7 @@ void il2cpp_dump(void *handle, char *outDir) {
             for (int j = 0; j < classCount; ++j) {
                 auto klass = il2cpp_image_get_class(image, j);
                 auto type = il2cpp_class_get_type(const_cast<Il2CppClass *>(klass));
-                //LOGD("type name : %s", il2cpp_type_get_name(type));
+                LOGD("type name : %s", il2cpp_type_get_name(type));
                 auto outPut = imageStr.str() + dump_type(type);
                 outPuts.push_back(outPut);
             }
@@ -396,7 +395,7 @@ void il2cpp_dump(void *handle, char *outDir) {
             std::stringstream imageStr;
             auto image_name = il2cpp_image_get_name(image);
             imageStr << "\n// Dll : " << image_name;
-            //LOGD("image name : %s", image->name);
+            LOGD("image name : %s", image_name);
             auto imageName = std::string(image_name);
             auto pos = imageName.rfind('.');
             auto imageNameNoExt = imageName.substr(0, pos);
@@ -410,7 +409,7 @@ void il2cpp_dump(void *handle, char *outDir) {
             for (int j = 0; j < reflectionTypes->max_length; ++j) {
                 auto klass = il2cpp_class_from_system_type((Il2CppReflectionType *) items[j]);
                 auto type = il2cpp_class_get_type(klass);
-                //LOGD("type name : %s", il2cpp_type_get_name(type));
+                LOGD("type name : %s", il2cpp_type_get_name(type));
                 auto outPut = imageStr.str() + dump_type(type);
                 outPuts.push_back(outPut);
             }

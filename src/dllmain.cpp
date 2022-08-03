@@ -20,7 +20,7 @@ void il2cppi_close_console() {
 void Main(HMODULE hModule)
 {
     il2cppi_new_console();
-    il2cpp_dump(hModule, (char*)"./");
+    il2cpp_dump(hModule, (char*)"./", "GameAssembly.dll");
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
